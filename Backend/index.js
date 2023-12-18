@@ -1,12 +1,15 @@
 const express = require("express");
 const { connectToMongoDB } = require("./Configurations/config");
+const User = require ("./Models/User");
 const app = express();
 app.use(express.json());
 require("dotenv").config();
 
-app.get("/hello", (req, res) => {
+app.post("/hello", (req, res) => {
   console.log("HELLO!!");
+
 });
+
 
 // auth route
 // const authRoutes = require("./routes/auth.routes");
