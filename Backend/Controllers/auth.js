@@ -1,4 +1,4 @@
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../Models/User");
 const config = require("../Configurations/config");
@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
 // Multer upload configuration
 const upload = multer({
 	storage: storage,
-	limits: { fileSize: 1024 * 1024 * 5 }, // 5MB file size limit
+	limits: { fileSize: 1024 * 1024 * 5 },
 	fileFilter: (req, file, cb) => {
 		// Define allowed file types for profile pictures
 		const allowedFileTypes = /jpeg|jpg|png/;
@@ -74,7 +74,7 @@ async function signup(req, res) {
 				username,
 				password: hashedPassword,
 				email,
-				profile_pic,
+				profile_pic ,
 			});
 			await newUser.save();
 
@@ -88,17 +88,11 @@ async function signup(req, res) {
 	}
 }
 
-/**
- * User signin function.
- * Handles user login and generates a JWT token for authentication.
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- */
 async function signin(req, res) {
 	try {
 		// Extract username and password from the request body
 		const { username, password } = req.body;
-
+		
 		// Check if the user exists in the database
 		const user = await User.findOne({ username });
 		if (!user) {
@@ -108,6 +102,7 @@ async function signin(req, res) {
 
 		// Check if the provided password is valid
 		const isPasswordValid = await bcrypt.compare(password, user.password);
+		
 		if (!isPasswordValid) {
 			// Return an error response if the password is invalid
 			return res.status(401).json({ message: "Invalid username or password" });
