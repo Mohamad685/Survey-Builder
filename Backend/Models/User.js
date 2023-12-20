@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 		minlength: 6,
+		trim:true,
 	},
 
 	email: {
@@ -32,22 +33,22 @@ const userSchema = new mongoose.Schema({
 	},
 });
 
-userSchema.pre(
-	"save",
-	async function (next) {
-		try {
-			const salt = await bcrypt.genSalt(10);
-			this.password = await bcrypt.hash(this.password, salt);
-			next();
-		} catch (error) {
-			console.log(error);
-			next(error);
-		}
-	},
-	{
-		timestamps: true,
-	}
-);
+// userSchema.pre(
+// 	"save",
+// 	async function (next) {
+// 		try {
+// 			const salt = await bcrypt.genSalt(10);
+// 			this.password = await bcrypt.hash(this.password, salt);
+// 			next();
+// 		} catch (error) {
+// 			console.log(error);
+// 			next(error);
+// 		}
+// 	},
+// 	{
+// 		timestamps: true,
+// 	}
+// );
 
 const User = mongoose.model("User", userSchema);
 

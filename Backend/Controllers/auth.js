@@ -41,10 +41,7 @@ const upload = multer({
 }).single("profile_pic"); // 'profile_pic' is the field name in the form
 
 /**
- * User signup function.
  * Handles user registration, including file upload for profile pictures.
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
  */
 async function signup(req, res) {
 	try {
@@ -78,7 +75,7 @@ async function signup(req, res) {
 			});
 			await newUser.save();
 
-			// Return a success response
+			// // Return a success response
 			res.status(201).json({ message: "User registered successfully" });
 		});
 	} catch (error) {
@@ -90,41 +87,42 @@ async function signup(req, res) {
 
 async function signin(req, res) {
 	try {
-		// Extract username and password from the request body
-		const { username, password } = req.body;
-		
-		// Check if the user exists in the database
-		const user = await User.findOne({ username });
-		if (!user) {
-			// Return an error response if the user is not found
-			return res.status(401).json({ message: "Invalid username or password" });
+	  // Extract username and password from the request body
+	  const { username, password } = req.body;
+  
+	  // Check if the user exists in the database
+	  const user = await User.findOne({ username });
+	  if (!user) {
+		// Return an error response if the user is not found
+		return res.status(401).json({ message: "Username not found" });
+	  }
+  
+	  // Check if the provided password is valid
+	  const isPasswordValid = await bcrypt.compare(password, user.password);
+  
+	  if (!isPasswordValid) {
+		// Return an error response if the password is invalid
+		return res.status(401).json({ message: "Incorrect password" });
+	  }
+  
+	  // Create and sign a JWT token for authentication
+	  const token = jwt.sign(
+		{ user: { id: user._id, username: user.username, role: user.role } },
+		process.env.JWT_SECRET,
+		{
+		  expiresIn: "10h",
 		}
-
-		// Check if the provided password is valid
-		const isPasswordValid = await bcrypt.compare(password, user.password);
-		
-		if (!isPasswordValid) {
-			// Return an error response if the password is invalid
-			return res.status(401).json({ message: "Invalid username or password" });
-		}
-
-		// Create and sign a JWT token for authentication
-		const token = jwt.sign(
-			{ user: { id: user._id, username: user.username, role: user.role } },
-			config.secretKey,
-			{
-				expiresIn: "1h",
-			}
-		);
-
-		// Return the JWT token in the response
-		res.json({ token });
+	  );
+  
+	  // Return the JWT token in the response
+	  res.json({ token });
 	} catch (error) {
-		// Handle internal server errors
-		console.error(error);
-		res.status(500).json({ message: "Internal Server Error" });
+	  // Handle internal server errors
+	  console.error(error);
+	  res.status(500).json({ message: "Internal Server Error" });
 	}
-}
+  }
+  
 
 // Export the functions to make them available to other parts of the application
 module.exports = { signup, signin };
