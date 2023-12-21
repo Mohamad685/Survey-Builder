@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const config = require('../Configurations/config');
 
 function authenticateUser(req, res, next) {
   const token = req.header('Authorization');
@@ -9,11 +8,11 @@ function authenticateUser(req, res, next) {
   }
 
   try {
-    const decoded = jwt.verify(token, config.secretKey);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded.user;
 
-    // Check if the user role is 'user'
-    if (req.user.role !== 'user') {
+    // Check if the user user_type is 'user'
+    if (req.user.user_type !== 'user') {
       return res.status(403).json({ message: 'Forbidden - Admins only' });
     }
 
@@ -32,11 +31,11 @@ function authenticateAdmin(req, res, next) {
   }
 
   try {
-    const decoded = jwt.verify(token, config.secretKey);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded.user;
 
-    // Check if the user role is 'admin'
-    if (req.user.role !== 'admin') {
+    // Check if the user user_type is 'admin'
+    if (req.user.user_type !== 'admin') {
       return res.status(403).json({ message: 'Forbidden - Users only' });
     }
 

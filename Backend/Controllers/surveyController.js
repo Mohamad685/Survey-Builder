@@ -1,17 +1,19 @@
+// controllers/surveyController.js
 const Survey = require("../Models/Survey");
 
-exports.createSurvey = async (req, res) => {
+// Controller to create a new survey
+const createSurvey = async (req, res) => {
 	try {
-		const { title, questions } = req.body;
-		const newSurvey = new Survey({ title, questions });
-		const savedSurvey = await newSurvey.save();
+		const survey = new Survey(req.body);
+		const savedSurvey = await survey.save();
 		res.json(savedSurvey);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
 };
 
-exports.getAllSurveys = async (req, res) => {
+// Controller to get all surveys
+const getAllSurveys = async (req, res) => {
 	try {
 		const surveys = await Survey.find();
 		res.json(surveys);
@@ -20,26 +22,48 @@ exports.getAllSurveys = async (req, res) => {
 	}
 };
 
-exports.updateSurvey = async (req, res) => {
+// Controller to delete a survey
+const deleteSurvey = async (req, res) => {
 	try {
-		const { title, questions } = req.body;
-		const updateSurvey = await Survey.findByIdAndUpdate(
-			req.params.id,
-			{ title, questions },
-			{ new: true }
-		);
-		res.json(updateSurvey);
+		const { surveyId } = req.params;
+
+		const deletedSurvey = await Survey.findByIdAndRemove(surveyId);
+
+		if (!deletedSurvey) {
+			return res.status(404).json({ message: "Survey not found" });
+		}
+
+		res.json({ message: "Survey deleted successfully" });
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
 };
 
-exports.deleteSurvey = async(req, res) => {
-    try{
-        const survey=await Survey.findByIdAndRemove(req.params.id);
-        res.json({message: 'Survey deleted successfully'});
-    }catch (error){
-        res.status(500).json({ error: error.message });
+// Controller to update survey details
+const updateSurvey = async (req, res) => {
+	try {
+		const { surveyId } = req.params;
+		const { title, questions } = req.body;
 
-    }
+		const updatedSurvey = await Survey.findByIdAndUpdate(
+			surveyId,
+			{ $set: { title, questions } },
+			{ new: true }
+		);
+
+		if (!updatedSurvey) {
+			return res.status(404).json({ message: "Survey not found" });
+		}
+
+		res.json(updatedSurvey);
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
+module.exports = {
+	createSurvey,
+	getAllSurveys,
+	deleteSurvey,
+	updateSurvey,
 };

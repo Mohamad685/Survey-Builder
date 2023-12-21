@@ -40,9 +40,34 @@ const upload = multer({
 	},
 }).single("profile_pic"); // 'profile_pic' is the field name in the form
 
-/**
- * Handles user registration, including file upload for profile pictures.
- */
+async function createAdmin() {
+	try {
+		// Check if an admin user already exists
+		const existingAdmin = await User.findOne({ username: "admin" });
+
+		if (!existingAdmin) {
+			const adminHashedPassword = await bcrypt.hash("123456789", 10);
+			
+			const newAdmin = new User({
+				username: "admin",
+				password: adminHashedPassword ,
+				email: "admin@new.com", 
+				profile_pic: null,
+				user_type: "admin",
+			});
+
+			await newAdmin.save();
+			console.log("Admin user created successfully");
+		} else {
+			console.log("Admin user already exists");
+		}
+	} catch (error) {
+		console.error("Error creating admin user:", error);
+	}
+}
+
+createAdmin();
+
 async function signup(req, res) {
 	try {
 		// Handle file upload using multer middleware
@@ -71,7 +96,7 @@ async function signup(req, res) {
 				username,
 				password: hashedPassword,
 				email,
-				profile_pic ,
+				profile_pic,
 			});
 			await newUser.save();
 
@@ -87,42 +112,41 @@ async function signup(req, res) {
 
 async function signin(req, res) {
 	try {
-	  // Extract username and password from the request body
-	  const { username, password } = req.body;
-  
-	  // Check if the user exists in the database
-	  const user = await User.findOne({ username });
-	  if (!user) {
-		// Return an error response if the user is not found
-		return res.status(401).json({ message: "Username not found" });
-	  }
-  
-	  // Check if the provided password is valid
-	  const isPasswordValid = await bcrypt.compare(password, user.password);
-  
-	  if (!isPasswordValid) {
-		// Return an error response if the password is invalid
-		return res.status(401).json({ message: "Incorrect password" });
-	  }
-  
-	  // Create and sign a JWT token for authentication
-	  const token = jwt.sign(
-		{ user: { id: user._id, username: user.username, role: user.role } },
-		process.env.JWT_SECRET,
-		{
-		  expiresIn: "10h",
+		// Extract username and password from the request body
+		const { username, password } = req.body;
+
+		// Check if the user exists in the database
+		const user = await User.findOne({ username });
+		if (!user) {
+			// Return an error response if the user is not found
+			return res.status(401).json({ message: "Username not found" });
 		}
-	  );
-  
-	  // Return the JWT token in the response
-	  res.json({ token });
+
+		// Check if the provided password is valid
+		const isPasswordValid = await bcrypt.compare(password, user.password);
+
+		if (!isPasswordValid) {
+			// Return an error response if the password is invalid
+			return res.status(401).json({ message: "Incorrect password" });
+		}
+
+		// Create and sign a JWT token for authentication
+		const token = jwt.sign(
+			{ user: { id: user._id, username: user.username, role: user.user_type} },
+			process.env.JWT_SECRET,
+			{
+				expiresIn: "10h",
+			}
+		);
+
+		// Return the JWT token in the response
+		res.json({ token });
 	} catch (error) {
-	  // Handle internal server errors
-	  console.error(error);
-	  res.status(500).json({ message: "Internal Server Error" });
+		// Handle internal server errors
+		console.error(error);
+		res.status(500).json({ message: "Internal Server Error" });
 	}
-  }
-  
+}
 
 // Export the functions to make them available to other parts of the application
 module.exports = { signup, signin };
