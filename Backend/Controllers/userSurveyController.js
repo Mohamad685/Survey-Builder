@@ -1,20 +1,17 @@
 const UserSurvey = require("../Models/userSurvey");
+const Survey = require('../Models/Survey');
 
-// Get all surveys for a user
-async function getUserSurveys(req, res) {
-	const { userId } = req.params;
-
-	try {
-		const userSurveys = await UserSurvey.find({ userId }).populate(
-			"surveyId",
-			"title"
-		);
-		res.json(userSurveys);
-	} catch (error) {
-		console.error(error);
-		res.status(500).json({ message: "Internal Server Error" });
-	}
+// Get all surveys
+async function getAllSurveys(req, res) {
+    try {
+        const allSurveys = await Survey.find();
+        res.json(allSurveys);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 }
+
 
 // Take a survey
 async function takeSurvey(req, res) {
@@ -72,7 +69,7 @@ async function resetSurveyAnswers(req, res) {
 }
 
 module.exports = {
-	getUserSurveys,
+	getAllSurveys,
 	takeSurvey,
 	markSurveyCompleted,
 	resetSurveyAnswers,

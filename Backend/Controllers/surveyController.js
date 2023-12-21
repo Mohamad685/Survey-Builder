@@ -1,4 +1,3 @@
-// controllers/surveyController.js
 const Survey = require("../Models/Survey");
 
 // Controller to create a new survey

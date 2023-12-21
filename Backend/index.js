@@ -18,7 +18,7 @@ const surveyRoutes = require('./Routes/survey')
 app.use('/api',authenticateAdmin, surveyRoutes);
 
 const userSurveyRoutes= require('./Routes/userSurvey')
-app.use('/api', userSurveyRoutes);
+app.use('/user', userSurveyRoutes);
 
 
 app.listen(8000, () => {

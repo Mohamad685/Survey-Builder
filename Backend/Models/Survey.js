@@ -1,5 +1,3 @@
-// models/Survey.js
-
 const mongoose = require('mongoose');
 
 const answerChoiceSchema = new mongoose.Schema({
