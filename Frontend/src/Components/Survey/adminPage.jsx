@@ -1,32 +1,20 @@
-// components/AdminPage.js
-import React, { useState } from 'react';
-// import SurveyForm from './SurveyForm';
-// import SurveyList from './SurveyList';
-
-function AdminPage() {
-  // State to track if the form should be displayed
-  const [showForm, setShowForm] = useState(false);
-  const [editingSurvey, setEditingSurvey] = useState(null);
-
-  const handleEdit = (survey) => {
-    setEditingSurvey(survey);
-    setShowForm(true);
-  };
-
+import React from 'react';
+import SurveyList from './SurveyList';
+import SurveyForm from './SurveyForm'; 
+const AdminPage = () => {
   return (
-    <div style={{ margin: '20px' }}>
-      <button onClick={() => setShowForm(!showForm)}>
-        {showForm ? 'Back to Survey List' : 'Create New Survey'}
-      </button>
-
-      {showForm ? (
-        // Pass the editingSurvey to the form if editing
-        <SurveyForm survey={editingSurvey} />
-      ) : (
-        <SurveyList onEdit={handleEdit} />
-      )}
+    <div>
+      <h1>Admin Dashboard</h1>
+      <div>
+        <h2>Create a New Survey</h2>
+        <SurveyForm onSave={(newSurvey) => console.log(newSurvey)} />
+      </div>
+      <div>
+        <h2>Existing Surveys</h2>
+        <SurveyList />
+      </div>
     </div>
   );
-}
+};
 
 export default AdminPage;

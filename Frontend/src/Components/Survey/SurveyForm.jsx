@@ -1,48 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
-const initialFormState = {
-  title: '',
-  questions: [{ text: '', type: 'input', answerChoices: [] }]
-};
+const SurveyForm = ({ onSave }) => {
+  const [title, setTitle] = useState('');
 
-function SurveyForm({ match }) {
-  const [formData, setFormData] = useState(initialFormState);
-  const isEditing = match && match.params.id; // Determine if editing based on the URL
-
-  useEffect(() => {
-    if (isEditing) {
-      // Fetch the survey to edit and set it as initial form state
-      axios.get(`/api/surveys/${match.params.id}`).then(response => {
-        setFormData(response.data);
-      });
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      // Adjust the API endpoint as necessary
+      const response = await axios.post('/api/surveys', { title });
+      onSave(response.data); // Pass the new survey up to the parent component
+    } catch (error) {
+      console.error("Error saving survey", error);
     }
-  }, [isEditing, match]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (isEditing) {
-      await axios.put(`/api/surveys/${match.params.id}`, formData);
-    } else {
-      await axios.post('/api/surveys', formData);
-    }
-    // Redirect or update state as needed after submission
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ margin: '20px' }}>
-      <div style={{ marginBottom: '10px' }}>
-        <label>Title:</label>
+    <form onSubmit={handleSubmit}>
+      <label>
+        Title:
         <input
           type="text"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          required
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
-      </div>
-      <button type="submit">{isEditing ? 'Update' : 'Create'} Survey</button>
+      </label>
+      <button type="submit">Save Survey</button>
     </form>
   );
-}
+};
 
 export default SurveyForm;

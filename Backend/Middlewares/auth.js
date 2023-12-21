@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-
 function authenticateAdmin(req, res, next) {
-  const token = req.header('Authorization')?.split(' ')[1]; // Assuming Bearer token
+  const token = req.header('Authorization')?.split(' ')[1]; 
   
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized - Missing token' });
@@ -11,7 +10,6 @@ function authenticateAdmin(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded.user;
-    // Proceed if the user has an 'admin' role
     if (req.user.role === 'admin') {
       return next();
     }
