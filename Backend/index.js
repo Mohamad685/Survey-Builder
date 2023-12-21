@@ -17,6 +17,10 @@ app.use("/auth", authRoutes);
 const surveyRoutes = require('./Routes/survey')
 app.use('/api',authenticateAdmin, surveyRoutes);
 
+const userSurveyRoutes= require('./Routes/userSurvey')
+app.use('/api', userSurveyRoutes);
+
+
 app.listen(8000, () => {
   console.log("Server listining on PORT: ", 8000);
 
